@@ -2,7 +2,7 @@ let Game = {
     interval: null,
     shapesDefinition: {},
     element: null,
-    rectangleSize: 20,
+    cellSize: 20,
     spawnPoint: 300,
     bottom: 520,
 
@@ -17,28 +17,28 @@ let Game = {
             color: '#000',
             x: 0,
             y: 0,
-            rectangles: []
+            cells: []
         }
 
         Game.shapesDefinition.L = Object.create(shape)
-        Game.shapesDefinition.L.rectangles = [
+        Game.shapesDefinition.L.cells = [
             [1, 0, 0],
             [1, 1, 1],
         ]
         Game.shapesDefinition.T = Object.create(shape)
-        Game.shapesDefinition.T.rectangles = [
+        Game.shapesDefinition.T.cells = [
             [0, 1, 0],
             [1, 1, 1],
         ]
 
         Game.shapesDefinition.Z = Object.create(shape)
-        Game.shapesDefinition.Z.rectangles = [
+        Game.shapesDefinition.Z.cells = [
             [1, 1, 0],
             [0, 1, 1],
         ]
 
         Game.shapesDefinition.Line = Object.create(shape)
-        Game.shapesDefinition.Line.rectangles = [
+        Game.shapesDefinition.Line.cells = [
             [1],
             [1],
             [1],
@@ -46,7 +46,7 @@ let Game = {
         ]
 
         Game.shapesDefinition.Square = Object.create(shape)
-        Game.shapesDefinition.Square.rectangles = [
+        Game.shapesDefinition.Square.cells = [
             [1, 1],
             [1, 1],
         ]
@@ -100,15 +100,15 @@ let Game = {
         shapes.forEach((shape) => {
             let x = shape.x
             let y = shape.y
-            shape.rectangles.forEach((row) => {
+            shape.cells.forEach((row) => {
                 context.fillStyle = shape.color
                 row.forEach((cellValue) => {
                     if (cellValue === 1) {
-                        context.fillRect(x, y, Game.rectangleSize, Game.rectangleSize)
+                        context.fillRect(x, y, Game.cellSize, Game.cellSize)
                     }
-                    x += Game.rectangleSize
+                    x += Game.cellSize
                 })
-                y += Game.rectangleSize
+                y += Game.cellSize
                 x = shape.x
             })
         })
@@ -125,13 +125,13 @@ let Game = {
         if (Game.activeShape === null) {
             Game.addShape(Game.getRandomShape())
         } else {
-            Game.activeShape.y += Game.rectangleSize
+            Game.activeShape.y += Game.cellSize
             if (Game.collisionDetected() || Game.hitBottom()) {
                 if (Game.activeShape.y < Game.getShapeHeight(Game.activeShape)) {
                     clearInterval(Game.interval)
                     Game.interval = null
                 }
-                Game.activeShape.y -= Game.rectangleSize
+                Game.activeShape.y -= Game.cellSize
                 Game.fixedShapes.push(Game.activeShape)
                 Game.activeShape = null
             }
@@ -142,10 +142,10 @@ let Game = {
         let difference = 0
         switch (direction) {
         case 'left':
-            difference -= Game.rectangleSize
+            difference -= Game.cellSize
             break
         case 'right':
-            difference += Game.rectangleSize
+            difference += Game.cellSize
             break
         }
         Game.activeShape.x += difference
@@ -155,26 +155,37 @@ let Game = {
     },
 
     rotateShapes: () => {
-        let originalRectangles = Game.activeShape.rectangles
-        originalRectangles.reverse()
+        let originalCells = Game.activeShape.cells
+        originalCells.reverse()
 
-        let rotatedRowsCount = originalRectangles[0].length
-        let rotatedColumnsCount = originalRectangles.length
+        let rotatedRowsCount = originalCells[0].length
+        let rotatedColumnsCount = originalCells.length
 
-        let rotatedRectangles = []
+        let rotatedCells = []
         for (let i = 0; i < rotatedRowsCount; i++) {
             let rotatedRow = []
             for (let j = 0; j < rotatedColumnsCount; j++) {
-                rotatedRow.push(Game.activeShape.rectangles[j][i])
+                rotatedRow.push(Game.activeShape.cells[j][i])
             }
-            rotatedRectangles.push(rotatedRow);
+            rotatedCells.push(rotatedRow);
         }
         console.log('Active shape rotated')
-        Game.activeShape.rectangles = rotatedRectangles
+        Game.activeShape.cells = rotatedCells
+    },
+
+    tetrisDetected: () => {
+        let linesToCheck = []
+        Game.fixedShapes.forEach((shape) => {
+            let y = shape.y
+            shape.cells.forEach((row) => {
+                linesToCheck.push(y)
+                y += Game.cellSize
+            })
+        })
     },
 
     hitBottom: () => {
-        if (Game.activeShape.y + Game.getShapeHeight(Game.activeShape) >= Game.bottom + Game.rectangleSize) {
+        if (Game.activeShape.y + Game.getShapeHeight(Game.activeShape) >= Game.bottom + Game.cellSize) {
             console.log('Active shape hit bottom')
             return true
         }
@@ -185,13 +196,13 @@ let Game = {
         let colliding = false
         let activeX = Game.activeShape.x
         let activeY = Game.activeShape.y
-        Game.activeShape.rectangles.forEach((activeRow) => {
+        Game.activeShape.cells.forEach((activeRow) => {
             activeRow.forEach((activeCellValue) => {
                 if (activeCellValue === 1) {
                     Game.fixedShapes.forEach((fixedShape) => {
                         let fixedX = fixedShape.x
                         let fixedY = fixedShape.y
-                        fixedShape.rectangles.forEach((fixedRow) => {
+                        fixedShape.cells.forEach((fixedRow) => {
                             fixedRow.some((fixedCellValue) => {
                                 if (fixedCellValue === 1) {
                                     if (fixedX === activeX && fixedY === activeY) {
@@ -199,17 +210,17 @@ let Game = {
                                         colliding = true
                                     }
                                 }
-                                fixedX += Game.rectangleSize
+                                fixedX += Game.cellSize
                             })
-                            fixedY += Game.rectangleSize
+                            fixedY += Game.cellSize
                             fixedX = fixedShape.x
                         })
                     })
 
                 }
-                activeX += Game.rectangleSize
+                activeX += Game.cellSize
             })
-            activeY += Game.rectangleSize
+            activeY += Game.cellSize
             activeX = Game.activeShape.x
         })
         return colliding
@@ -217,9 +228,9 @@ let Game = {
 
     getShapeHeight: (shape) => {
         let height = 0
-        shape.rectangles.forEach((row) => {
+        shape.cells.forEach((row) => {
             if (row.indexOf(1) !== -1) {
-                height += Game.rectangleSize
+                height += Game.cellSize
             }
         })
         return height
