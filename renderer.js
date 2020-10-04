@@ -88,8 +88,8 @@ let Game = {
             [1, 1, 0],
         ]
 
-        Game.shapesDefinition.Line = Object.assign({}, shape)
-        Game.shapesDefinition.Line.cells = [
+        Game.shapesDefinition.I = Object.assign({}, shape)
+        Game.shapesDefinition.I.cells = [
             [1],
             [1],
             [1],
