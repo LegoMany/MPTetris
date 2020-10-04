@@ -59,9 +59,17 @@ let Game = {
 
         Game.shapesDefinition.L = Object.assign({}, shape)
         Game.shapesDefinition.L.cells = [
-            [1, 0, 0],
             [1, 1, 1],
+            [1, 0, 0],
         ]
+
+        Game.shapesDefinition.Lreverse = Object.assign({}, shape)
+        Game.shapesDefinition.Lreverse.cells = [
+            [1, 0],
+            [1, 0],
+            [1, 1],
+        ]
+
         Game.shapesDefinition.T = Object.assign({}, shape)
         Game.shapesDefinition.T.cells = [
             [0, 1, 0],
@@ -72,6 +80,12 @@ let Game = {
         Game.shapesDefinition.Z.cells = [
             [1, 1, 0],
             [0, 1, 1],
+        ]
+
+        Game.shapesDefinition.S = Object.assign({}, shape)
+        Game.shapesDefinition.S.cells = [
+            [0, 1, 1],
+            [1, 1, 0],
         ]
 
         Game.shapesDefinition.Line = Object.assign({}, shape)
