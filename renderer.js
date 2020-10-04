@@ -23,24 +23,24 @@ let Game = {
             cells: []
         }
 
-        Game.shapesDefinition.L = Object.create(shape)
+        Game.shapesDefinition.L = Object.assign({}, shape)
         Game.shapesDefinition.L.cells = [
             [1, 0, 0],
             [1, 1, 1],
         ]
-        Game.shapesDefinition.T = Object.create(shape)
+        Game.shapesDefinition.T = Object.assign({}, shape)
         Game.shapesDefinition.T.cells = [
             [0, 1, 0],
             [1, 1, 1],
         ]
 
-        Game.shapesDefinition.Z = Object.create(shape)
+        Game.shapesDefinition.Z = Object.assign({}, shape)
         Game.shapesDefinition.Z.cells = [
             [1, 1, 0],
             [0, 1, 1],
         ]
 
-        Game.shapesDefinition.Line = Object.create(shape)
+        Game.shapesDefinition.Line = Object.assign({}, shape)
         Game.shapesDefinition.Line.cells = [
             [1],
             [1],
@@ -48,7 +48,7 @@ let Game = {
             [1]
         ]
 
-        Game.shapesDefinition.Square = Object.create(shape)
+        Game.shapesDefinition.Square = Object.assign({}, shape)
         Game.shapesDefinition.Square.cells = [
             [1, 1],
             [1, 1],
@@ -86,8 +86,9 @@ let Game = {
 
     start: () => {
         Game.interval = setInterval(() => {
+            console.clear()
             Game.moveShapesDown()
-            Game.tetrisDetected()
+            Game.removeTetrisLines()
             Game.draw()
         }, 1000)
     },
@@ -176,26 +177,47 @@ let Game = {
         Game.activeShape.cells = rotatedCells
     },
 
-    tetrisDetected: () => {
+    getTetrisLines: () => {
         let linesToCheck = []
+        let tetrisLines = []
         Game.fixedShapes.forEach((shape) => {
             let y = shape.y
             shape.cells.forEach((row) => {
-                if (row.indexOf(0) === -1) {
-                    if (linesToCheck[y] === undefined) {
-                        linesToCheck[y] = 0
+                row.forEach((cellValue) => {
+                    if (cellValue === 1) {
+                        if (linesToCheck[y] === undefined) {
+                            linesToCheck[y] = 0
+                        }
+                        linesToCheck[y] += 1
                     }
-                    linesToCheck[y] += row.length
-                }
+                })
                 y += Game.cellSize
             })
         })
 
         linesToCheck.forEach((filledCellsCount, y) => {
+            console.log('line ' + y + '    ' +  filledCellsCount)
             if (filledCellsCount >= Game.width / Game.cellSize) {
-                console.log('Tetris detected in line ' + y / Game.cellSize)
+                console.log('tetris in line ' + y)
+                tetrisLines.push(y)
             }
         })
+        return tetrisLines
+    },
+
+    removeTetrisLines: () => {
+        let tetrisLines = Game.getTetrisLines();
+        if (tetrisLines.length > 0) {
+            Game.fixedShapes.forEach((shape) => {
+                let y = shape.y
+                shape.cells.forEach((row, index) => {
+                    if (tetrisLines.indexOf(y) !== -1) {
+                        shape.cells.splice(index, 1)
+                    }
+                    y += Game.cellSize
+                })
+            })
+        }
     },
 
     hitBottom: () => {
