@@ -85,6 +85,7 @@ let Game = {
         Game.interval = setInterval(() => {
             console.log('Game loop tick')
             Game.moveShapesDown()
+            Game.tetrisDetected()
             Game.draw()
         }, 1000)
     },
@@ -130,6 +131,7 @@ let Game = {
                 if (Game.activeShape.y < Game.getShapeHeight(Game.activeShape)) {
                     clearInterval(Game.interval)
                     Game.interval = null
+                    console.log('Game over')
                 }
                 Game.activeShape.y -= Game.cellSize
                 Game.fixedShapes.push(Game.activeShape)
@@ -178,9 +180,20 @@ let Game = {
         Game.fixedShapes.forEach((shape) => {
             let y = shape.y
             shape.cells.forEach((row) => {
-                linesToCheck.push(y)
+                if (row.indexOf(0) === -1) {
+                    if (linesToCheck[y] === undefined) {
+                        linesToCheck[y] = 0
+                    }
+                    linesToCheck[y] += row.length
+                }
                 y += Game.cellSize
             })
+        })
+
+        linesToCheck.forEach((filledCellsCount, y) => {
+            if (filledCellsCount >= Game.width / Game.cellSize) {
+                console.log('Tetris detected in line ' + y / Game.cellSize)
+            }
         })
     },
 
@@ -238,7 +251,7 @@ let Game = {
 
     getRandomShape: () => {
         let keys = Object.keys(Game.shapesDefinition);
-        return Object.create(Game.shapesDefinition[keys[keys.length * Math.random() << 0]]);
+        return Object.assign({}, Game.shapesDefinition[keys[keys.length * Math.random() << 0]]);
     },
 
     getRandomColor: () => {
