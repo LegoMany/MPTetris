@@ -14,7 +14,41 @@ let Game = {
         Game.element = document.getElementById("canvas")
         Game.bottom = Game.element.height
         Game.width = Game.element.width
+        Game.initializeShapes()
 
+        window.addEventListener('keydown', (e) => {
+            if (Game.interval !== null) {
+                switch (e.key) {
+                case 'ArrowLeft':
+                    if (Game.activeShape !== null) {
+                        Game.moveShapesSideways('left')
+                        Game.draw()
+                    }
+                    break
+                case 'ArrowRight':
+                    if (Game.activeShape !== null) {
+                        Game.moveShapesSideways('right')
+                        Game.draw()
+                    }
+                    break
+                case 'ArrowDown':
+                    if (Game.activeShape !== null) {
+                        Game.moveShapesDown()
+                        Game.draw()
+                    }
+                    break
+                case 'ArrowUp':
+                    if (Game.activeShape !== null) {
+                        Game.rotateShapes()
+                        Game.draw()
+                    }
+                    break
+                }
+            }
+        }, true)
+    },
+
+    initializeShapes: () => {
         let shape = {
             me: this,
             color: '#000',
@@ -53,40 +87,10 @@ let Game = {
             [1, 1],
             [1, 1],
         ]
-
-        window.addEventListener('keydown', (e) => {
-            if (Game.interval !== null) {
-                switch (e.key) {
-                case 'ArrowLeft':
-                    if (Game.activeShape !== null) {
-                        Game.moveShapesSideways('left')
-                        Game.draw()
-                    }
-                    break
-                case 'ArrowRight':
-                    if (Game.activeShape !== null) {
-                        Game.moveShapesSideways('right')
-                        Game.draw()
-                    }
-                    break
-                case 'ArrowDown':
-                    Game.moveShapesDown()
-                    Game.draw()
-                    break
-                case 'ArrowUp':
-                    if (Game.activeShape !== null) {
-                        Game.rotateShapes()
-                        Game.draw()
-                    }
-                    break
-                }
-            }
-        }, true)
     },
 
     start: () => {
         Game.interval = setInterval(() => {
-            console.clear()
             Game.moveShapesDown()
             Game.removeTetrisLines()
             Game.draw()
@@ -134,7 +138,7 @@ let Game = {
                 if (Game.activeShape.y < Game.getShapeHeight(Game.activeShape)) {
                     clearInterval(Game.interval)
                     Game.interval = null
-                    console.log('Game over')
+                    alert('Game over')
                 }
                 Game.activeShape.y -= Game.cellSize
                 Game.fixedShapes.push(Game.activeShape)
@@ -199,9 +203,7 @@ let Game = {
         })
 
         linesToCheck.forEach((filledCellsCount, y) => {
-            console.log('line ' + y + '    ' +  filledCellsCount)
             if (filledCellsCount >= Game.width / Game.cellSize) {
-                console.log('tetris in line ' + y)
                 tetrisLines.push(y)
             }
         })
@@ -220,6 +222,7 @@ let Game = {
                     y += Game.cellSize
                 })
             })
+            Game.initializeShapes()
         }
     },
 
