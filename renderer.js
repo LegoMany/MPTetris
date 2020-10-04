@@ -175,6 +175,9 @@ let Game = {
             rotatedCells.push(rotatedRow);
         }
         Game.activeShape.cells = rotatedCells
+        if (Game.collisionDetected() || Game.outOfBoundsDetected() || Game.hitBottom()) {
+            Game.activeShape.cells = originalCells.reverse()
+        }
     },
 
     getTetrisLines: () => {
