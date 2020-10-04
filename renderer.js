@@ -86,7 +86,6 @@ let Game = {
 
     start: () => {
         Game.interval = setInterval(() => {
-            console.log('Game loop tick')
             Game.moveShapesDown()
             Game.tetrisDetected()
             Game.draw()
@@ -160,7 +159,7 @@ let Game = {
     },
 
     rotateShapes: () => {
-        let originalCells = Game.activeShape.cells
+        let originalCells = Game.activeShape.cells.slice()
         originalCells.reverse()
 
         let rotatedRowsCount = originalCells[0].length
@@ -170,11 +169,10 @@ let Game = {
         for (let i = 0; i < rotatedRowsCount; i++) {
             let rotatedRow = []
             for (let j = 0; j < rotatedColumnsCount; j++) {
-                rotatedRow.push(Game.activeShape.cells[j][i])
+                rotatedRow.push(originalCells[j][i])
             }
             rotatedCells.push(rotatedRow);
         }
-        console.log('Active shape rotated')
         Game.activeShape.cells = rotatedCells
     },
 
@@ -201,11 +199,7 @@ let Game = {
     },
 
     hitBottom: () => {
-        if (Game.activeShape.y + Game.getShapeHeight(Game.activeShape) >= Game.bottom + Game.cellSize) {
-            console.log('Active shape hit bottom')
-            return true
-        }
-        return false
+        return Game.activeShape.y + Game.getShapeHeight(Game.activeShape) >= Game.bottom + Game.cellSize;
     },
 
     collisionDetected: () => {
@@ -222,7 +216,6 @@ let Game = {
                             fixedRow.some((fixedCellValue) => {
                                 if (fixedCellValue === 1) {
                                     if (fixedX === activeX && fixedY === activeY) {
-                                        console.log('Active shape collision detected')
                                         colliding = true
                                     }
                                 }
@@ -243,11 +236,7 @@ let Game = {
     },
 
     outOfBoundsDetected: () => {
-        if (Game.activeShape.x < 0 || Game.activeShape.x + Game.getShapeWidth(Game.activeShape) > Game.width) {
-            console.log('Active shape is out of bounds')
-            return true
-        }
-        return false
+        return Game.activeShape.x < 0 || Game.activeShape.x + Game.getShapeWidth(Game.activeShape) > Game.width;
     },
 
     getShapeHeight: (shape) => {
