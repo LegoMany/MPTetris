@@ -4,13 +4,16 @@ let Game = {
     element: null,
     cellSize: 20,
     spawnPoint: 300,
-    bottom: 520,
+    bottom: 0,
+    width: 0,
 
     activeShape: null,
     fixedShapes: [],
 
     initialize: () => {
         Game.element = document.getElementById("canvas")
+        Game.bottom = Game.element.height
+        Game.width = Game.element.width
 
         let shape = {
             me: this,
@@ -151,7 +154,7 @@ let Game = {
             break
         }
         Game.activeShape.x += difference
-        if (Game.collisionDetected()) {
+        if (Game.collisionDetected() || Game.outOfBoundsDetected()) {
             Game.activeShape.x -= difference
         }
     },
@@ -239,6 +242,14 @@ let Game = {
         return colliding
     },
 
+    outOfBoundsDetected: () => {
+        if (Game.activeShape.x < 0 || Game.activeShape.x + Game.getShapeWidth(Game.activeShape) > Game.width) {
+            console.log('Active shape is out of bounds')
+            return true
+        }
+        return false
+    },
+
     getShapeHeight: (shape) => {
         let height = 0
         shape.cells.forEach((row) => {
@@ -247,6 +258,10 @@ let Game = {
             }
         })
         return height
+    },
+
+    getShapeWidth: (shape) => {
+        return shape.cells[0].length * Game.cellSize
     },
 
     getRandomShape: () => {
