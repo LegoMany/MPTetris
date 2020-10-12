@@ -1,5 +1,5 @@
-import { AbstractShape } from "shapes/AbstractShape"
-import { Cell } from "shapes/Cell"
+import { AbstractShape } from 'shapes/AbstractShape'
+import { Cell } from 'shapes/Cell'
 
 export class SquareShape extends AbstractShape {
   cells = [
