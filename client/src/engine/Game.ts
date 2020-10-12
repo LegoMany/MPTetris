@@ -20,6 +20,7 @@ export class Game extends HasLifecycle implements IHasLifecycle {
   update(frameTime: DOMHighResTimeStamp) {
     if (frameTime > this.lastDrawnFrame + this.speed) {
       this.field.draw()
+      this.field.moveShapesDown()
       this.lastDrawnFrame = frameTime
     }
   }

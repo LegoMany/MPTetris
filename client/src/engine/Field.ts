@@ -36,6 +36,14 @@ export class Field {
     })
   }
 
+  public moveShapesDown() {
+    this.activeShape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        cell.position.y += Field.cellSize
+      })
+    })
+  }
+
   public addShape(shape: AbstractShape) {
     let x = shape.spawnPosition.x
     let y = shape.spawnPosition.y
