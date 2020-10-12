@@ -1,3 +1,3 @@
-import { Game } from './engine/Game'
+import { Game } from 'engine/Game'
 
 new Game()
