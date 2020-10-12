@@ -18,6 +18,22 @@ export class Field {
 
     this.height = element.height
     this.width = element.width
+
+    // TODO: pls change this
+    window.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (this.activeShape !== null) {
+            this.moveShapesSideways('left')
+          }
+          break
+        case 'ArrowRight':
+          if (this.activeShape !== null) {
+            this.moveShapesSideways('right')
+          }
+          break
+      }
+    })
   }
 
   public draw() {
@@ -42,6 +58,24 @@ export class Field {
         cell.position.y += Field.cellSize
       })
     })
+  }
+
+  public moveShapesSideways(direction) {
+    let difference = 0
+    switch (direction) {
+      case 'left':
+        difference -= Field.cellSize
+        break
+      case 'right':
+        difference += Field.cellSize
+        break
+    }
+    this.activeShape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        cell.position.x += difference
+      })
+    })
+    this.draw()
   }
 
   public addShape(shape: AbstractShape) {
