@@ -1,5 +1,6 @@
 import { AbstractShape } from 'shapes/AbstractShape';
 import { Coordinate } from 'shapes/Coordinate';
+import { Shapes } from "shapes/Shapes";
 
 export class Field {
   static readonly cellSize: number = 20
@@ -52,7 +53,10 @@ export class Field {
     })
   }
 
-  public addShape(shape: AbstractShape) {
+  public spawnShape() {
+    let randomNumber = Math.floor(Math.random() * Math.floor(6))
+    let shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0));
+
     let x = shape.spawnPosition.x
     let y = shape.spawnPosition.y
 

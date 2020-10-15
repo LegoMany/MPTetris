@@ -7,12 +7,12 @@ import { IShape } from './IShape'
 import { OShape } from './OShape'
 
 export let Shapes = {
-  LShape,
-  JShape,
-  TShape,
-  ZShape,
-  SShape,
-  IShape,
-  OShape,
+  0: LShape,
+  1: JShape,
+  2: TShape,
+  3: ZShape,
+  4: SShape,
+  5: IShape,
+  6: OShape,
 }
 
