@@ -100,7 +100,7 @@ export class Field {
         })
       })
       this.fixedShapes.push(shape)
-      this.activeShape = null
+      this.spawnShape()
     }
   }
 
