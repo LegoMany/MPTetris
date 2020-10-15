@@ -33,6 +33,12 @@ export class Field {
             this.moveShapeHorizontally(this.activeShape, 'right')
           }
           break
+        case 'ArrowDown':
+          if (this.activeShape !== null) {
+            this.moveShapeVertically(this.activeShape)
+            this.draw()
+          }
+          break
       }
     })
   }
