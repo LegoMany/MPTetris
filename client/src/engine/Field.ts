@@ -98,8 +98,7 @@ export class Field {
       })
     })
 
-    if (this.shapeHitBottom(shape)) {
-      console.log('hit bottom')
+    if (this.shapeHitBottom(shape) || this.collidingWithFixedShape(shape) === true) {
       shape.cells.forEach((row) => {
         row.forEach((cell) => {
           cell.position.y -= Field.cellSize
@@ -136,6 +135,24 @@ export class Field {
       })
     })
     return lowestPoint === this.height
+  }
+
+  protected collidingWithFixedShape(shape: AbstractShape): boolean {
+    let collision = false
+    shape.cells.forEach((activeRow) => {
+      activeRow.forEach((activeCell) => {
+        this.fixedShapes.forEach((fixedShape) => {
+          fixedShape.cells.forEach((fixedRow) => {
+            fixedRow.forEach((fixedCell) => {
+              if (activeCell.position.x === fixedCell.position.x && activeCell.position.y === fixedCell.position.y) {
+                collision = true
+              }
+            })
+          })
+        })
+      })
+    })
+    return collision
   }
 
   protected clear() {
