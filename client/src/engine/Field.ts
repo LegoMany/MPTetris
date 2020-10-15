@@ -24,12 +24,12 @@ export class Field {
       switch (e.key) {
         case 'ArrowLeft':
           if (this.activeShape !== null) {
-            this.moveShapesSideways('left')
+            this.moveShapeHorizontally(this.activeShape, 'left')
           }
           break
         case 'ArrowRight':
           if (this.activeShape !== null) {
-            this.moveShapesSideways('right')
+            this.moveShapeHorizontally(this.activeShape, 'right')
           }
           break
       }
@@ -52,15 +52,42 @@ export class Field {
     })
   }
 
-  public moveShapesDown() {
-    this.activeShape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        cell.position.y += Field.cellSize
-      })
-    })
+  public moveActiveShapesDown() {
+    if (this.activeShape instanceof AbstractShape) {
+      this.moveShapeVertically(this.activeShape)
+    }
   }
 
-  public moveShapesSideways(direction) {
+  protected moveShapeVertically(shape: AbstractShape, direction: string = 'down') {
+    let difference = 0
+    switch (direction) {
+      case 'up':
+        difference -= Field.cellSize
+        break
+      case 'down':
+        difference += Field.cellSize
+        break
+    }
+
+    shape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        cell.position.y += difference
+      })
+    })
+
+    if (this.shapeHitBottom(shape)) {
+      console.log('hit bottom')
+      shape.cells.forEach((row) => {
+        row.forEach((cell) => {
+          cell.position.y -= Field.cellSize
+        })
+      })
+      this.fixedShapes.push(shape)
+      this.activeShape = null
+    }
+  }
+
+  public moveShapeHorizontally(shape: AbstractShape, direction: string) {
     let difference = 0
     switch (direction) {
       case 'left':
@@ -70,7 +97,7 @@ export class Field {
         difference += Field.cellSize
         break
     }
-    this.activeShape.cells.forEach((row) => {
+    shape.cells.forEach((row) => {
       row.forEach((cell) => {
         cell.position.x += difference
       })
@@ -89,6 +116,16 @@ export class Field {
     })
 
     this.activeShape = shape
+  }
+
+  protected shapeHitBottom(shape: AbstractShape): boolean {
+    let lowestPoint = 0
+    shape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        lowestPoint = cell.position.y
+      })
+    })
+    return lowestPoint === this.height
   }
 
   protected clear() {

@@ -5,7 +5,7 @@ import { Coordinate } from 'shapes/Coordinate';
 
 export class Game extends HasLifecycle implements IHasLifecycle {
   protected lastDrawnFrame: number = 0
-  protected speed: number = 1000
+  protected speed: number = 500
   protected field: Field
 
   constructor() {
@@ -19,8 +19,9 @@ export class Game extends HasLifecycle implements IHasLifecycle {
 
   update(frameTime: DOMHighResTimeStamp) {
     if (frameTime > this.lastDrawnFrame + this.speed) {
+      console.log('tick')
+      this.field.moveActiveShapesDown()
       this.field.draw()
-      this.field.moveShapesDown()
       this.lastDrawnFrame = frameTime
     }
   }
