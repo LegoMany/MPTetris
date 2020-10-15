@@ -124,6 +124,15 @@ export class Field {
         cell.position.x += difference
       })
     })
+
+    if (this.collidingWithFixedShape(shape) === true) {
+      shape.cells.forEach((row) => {
+        row.forEach((cell) => {
+          cell.position.x -= difference
+        })
+      })
+    }
+
     this.draw()
   }
 
