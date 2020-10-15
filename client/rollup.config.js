@@ -20,11 +20,6 @@ export default {
     }),
     commonjs(),
     typescript(),
-    terser({
-      output: {
-        comments: false,
-      },
-    }),
     htmlTemplate({
       template: 'src/index.html',
       target: 'dist/index.html',
