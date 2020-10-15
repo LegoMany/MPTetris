@@ -1,18 +1,18 @@
-import { LRShape } from './LRShape'
+import { JShape } from './JShape'
 import { LShape } from './LShape'
 import { TShape } from './TShape'
 import { ZShape } from './ZShape'
 import { SShape } from './SShape'
 import { IShape } from './IShape'
-import { SquareShape } from './SquareShape'
+import { OShape } from './OShape'
 
 export let Shapes = {
   LShape,
-  LRShape,
+  JShape,
   TShape,
   ZShape,
   SShape,
   IShape,
-  SquareShape,
+  OShape,
 }
 
