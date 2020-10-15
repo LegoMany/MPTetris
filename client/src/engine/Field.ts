@@ -52,6 +52,19 @@ export class Field {
     })
   }
 
+  public addShape(shape: AbstractShape) {
+    let x = shape.spawnPosition.x
+    let y = shape.spawnPosition.y
+
+    shape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        cell.position = new Coordinate((cell.column * Field.cellSize) + x, (cell.row * Field.cellSize) + y)
+      })
+    })
+
+    this.activeShape = shape
+  }
+
   public moveActiveShapesDown() {
     if (this.activeShape instanceof AbstractShape) {
       this.moveShapeVertically(this.activeShape)
@@ -87,7 +100,7 @@ export class Field {
     }
   }
 
-  public moveShapeHorizontally(shape: AbstractShape, direction: string) {
+  protected moveShapeHorizontally(shape: AbstractShape, direction: string) {
     let difference = 0
     switch (direction) {
       case 'left':
@@ -103,19 +116,6 @@ export class Field {
       })
     })
     this.draw()
-  }
-
-  public addShape(shape: AbstractShape) {
-    let x = shape.spawnPosition.x
-    let y = shape.spawnPosition.y
-
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        cell.position = new Coordinate((cell.column * Field.cellSize) + x, (cell.row * Field.cellSize) + y)
-      })
-    })
-
-    this.activeShape = shape
   }
 
   protected shapeHitBottom(shape: AbstractShape): boolean {
