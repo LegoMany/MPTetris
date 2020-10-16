@@ -1,14 +1,17 @@
 import { AbstractShape } from 'shapes/AbstractShape';
 import { Coordinate } from 'shapes/Coordinate';
-import { Shapes } from "shapes/Shapes";
+import { Shapes } from 'shapes/Shapes';
+import { IHasLifecycle } from 'engine/behavior/HasLifecycle';
 
-export class Field {
+export class Field implements IHasLifecycle {
   static readonly cellSize: number = 20
 
   public width: number
   public height: number
 
   protected ctx: CanvasRenderingContext2D
+  protected lastDrawnFrame: number = 0
+  protected speed: number = 500
 
   protected fixedShapes: AbstractShape[] = []
   protected activeShape: AbstractShape = null
@@ -19,6 +22,8 @@ export class Field {
 
     this.height = element.height
     this.width = element.width
+
+    this.spawnShape()
 
     // TODO: pls change this
     window.addEventListener('keydown', (e) => {
@@ -41,6 +46,14 @@ export class Field {
           break
       }
     })
+  }
+
+  public update(frameTime: DOMHighResTimeStamp) {
+    if (frameTime > this.lastDrawnFrame + this.speed) {
+      this.moveActiveShapesDown()
+      this.lastDrawnFrame = frameTime
+    }
+    this.draw()
   }
 
   public draw() {
