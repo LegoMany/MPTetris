@@ -14,7 +14,7 @@ export class Field {
   protected activeShape: AbstractShape = null
 
   constructor(canvasSelector: string) {
-    let element = (document.querySelector(canvasSelector) as HTMLCanvasElement);
+    let element: HTMLCanvasElement = document.querySelector(canvasSelector);
     this.ctx = element.getContext('2d')
 
     this.height = element.height
