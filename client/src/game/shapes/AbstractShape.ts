@@ -23,6 +23,7 @@ export abstract class AbstractShape {
         this.spawnPosition.x + cellDefinition[1] * Field.cellSize,
         this.spawnPosition.y + cellDefinition[0] * Field.cellSize
       )
+
       this._cells.push(newCell)
     })
   }

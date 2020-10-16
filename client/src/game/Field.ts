@@ -47,16 +47,21 @@ export class Field implements IHasLifecycle {
       this.moveActiveShapesDown()
       this.lastDrawnFrame = frameTime
     }
+
     this.draw()
   }
 
   public draw() {
-    this.clear()
     const shapes = [...this.fixedShapes]
+
+    this.clear()
+
     if (this._activeShape !== null) {
       shapes.push(this._activeShape)
     }
+
     this.ctx.fillStyle = '#000'
+
     shapes.forEach(shape => {
       shape.cells.forEach(cell => {
         this.ctx.fillRect(cell.position.x, cell.position.y, Field.cellSize, Field.cellSize)
@@ -65,7 +70,8 @@ export class Field implements IHasLifecycle {
   }
 
   public spawnShape() {
-    const shape = new (this.shapeList.getShape())(new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
+    // HACK: apparently TypeScript doesn't like returning constructors and directly calling them. "as any" fixes it (???)
+    const shape = new (this.shapeList.getShape() as any)(new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
     shape.initializeCells()
 
     this._activeShape = shape
@@ -87,9 +93,11 @@ export class Field implements IHasLifecycle {
       if (inputManager.keyIsPressed('ArrowLeft')) {
         this._activeShape.moveHorizontally('left')
       }
+
       if (inputManager.keyIsPressed('ArrowRight')) {
         this._activeShape.moveHorizontally('right')
       }
+
       if (inputManager.keyIsPressed('ArrowDown')) {
         this._activeShape.moveVertically()
       }
