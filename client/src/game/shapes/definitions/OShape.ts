@@ -1,4 +1,4 @@
-import { AbstractShape } from 'shapes/AbstractShape'
+import { AbstractShape } from '../AbstractShape'
 
 export class OShape extends AbstractShape {
   definition = [

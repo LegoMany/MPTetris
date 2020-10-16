@@ -1,8 +1,8 @@
-import { AbstractShape } from 'shapes/AbstractShape'
-import { Coordinate } from 'shapes/Coordinate'
-import { Shapes } from 'shapes/Shapes'
-import { IHasLifecycle } from 'engine/behavior/HasLifecycle'
-import { InputManager } from 'engine/InputManager'
+import { AbstractShape } from './shapes/AbstractShape'
+import { Coordinate } from './shapes/Coordinate'
+import { Shapes } from './shapes/Shapes'
+import { IHasLifecycle } from '../engine/behavior/HasLifecycle'
+import { InputManager } from '../engine/InputManager'
 
 export class Field implements IHasLifecycle {
   static readonly cellSize: number = 20

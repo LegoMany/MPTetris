@@ -1,4 +1,4 @@
-import { Coordinate } from 'shapes/Coordinate'
+import { Coordinate } from './Coordinate'
 
 export class Cell {
   position: Coordinate

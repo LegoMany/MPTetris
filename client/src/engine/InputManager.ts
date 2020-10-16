@@ -14,6 +14,7 @@ export class InputManager {
         this.pressedKeys.push(e.key)
       }
     })
+
     window.addEventListener('keyup', e => {
       this.pressedKeys.splice(this.pressedKeys.indexOf(e.key), 1)
     })

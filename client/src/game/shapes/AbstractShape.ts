@@ -1,6 +1,6 @@
-import { Coordinate } from 'shapes/Coordinate'
-import { Field } from 'engine/Field'
-import { Cell } from 'shapes/Cell'
+import { Coordinate } from './Coordinate'
+import { Field } from '../Field'
+import { Cell } from './Cell'
 
 export abstract class AbstractShape {
   public id = 0
