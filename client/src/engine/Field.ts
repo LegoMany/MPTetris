@@ -18,8 +18,8 @@ export class Field implements IHasLifecycle {
   protected lastKeyFrame: number = 0
   protected keySpeed: number = 16 * 3
 
-  protected fixedShapes: AbstractShape[] = []
-  protected activeShape: AbstractShape = null
+  protected _fixedShapes: AbstractShape[] = []
+  protected _activeShape: AbstractShape = null
 
   constructor(canvasSelector: string) {
     let element: HTMLCanvasElement = document.querySelector(canvasSelector);
@@ -32,6 +32,10 @@ export class Field implements IHasLifecycle {
   }
 
   public update(frameTime: DOMHighResTimeStamp) {
+    if (this._activeShape === null) {
+      this.spawnShape()
+    }
+
     if (frameTime > this.lastKeyFrame + this.keySpeed) {
       this.handleKeys()
       this.lastKeyFrame = frameTime
@@ -47,8 +51,8 @@ export class Field implements IHasLifecycle {
   public draw() {
     this.clear()
     let shapes = [...this.fixedShapes]
-    if (this.activeShape !== null) {
-      shapes.push(this.activeShape)
+    if (this._activeShape !== null) {
+      shapes.push(this._activeShape)
     }
     this.ctx.fillStyle = '#000'
     shapes.forEach((shape) => {
@@ -62,7 +66,7 @@ export class Field implements IHasLifecycle {
 
   public spawnShape() {
     let randomNumber = Math.floor(Math.random() * Math.floor(6))
-    let shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0));
+    let shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this);
 
     let x = shape.spawnPosition.x
     let y = shape.spawnPosition.y
@@ -73,129 +77,43 @@ export class Field implements IHasLifecycle {
       })
     })
 
-    this.activeShape = shape
+    this._activeShape = shape
   }
 
   public moveActiveShapesDown() {
-    if (this.activeShape instanceof AbstractShape) {
-      this.moveShapeVertically(this.activeShape)
+    if (this._activeShape instanceof AbstractShape) {
+      this._activeShape.moveVertically(this._activeShape)
     }
+  }
+
+  public fixShape(shape: AbstractShape): void {
+    this._fixedShapes.push(shape)
   }
 
   protected handleKeys(): void {
     let inputManager = InputManager.instance
-    if (this.activeShape !== null) {
+    if (this._activeShape !== null) {
       if (inputManager.keyIsPressed('ArrowLeft')) {
-        this.moveShapeHorizontally(this.activeShape, 'left')
+        this._activeShape.moveHorizontally(this._activeShape, 'left')
       }
       if (inputManager.keyIsPressed('ArrowRight')) {
-        this.moveShapeHorizontally(this.activeShape, 'right')
+        this._activeShape.moveHorizontally(this._activeShape, 'right')
       }
       if (inputManager.keyIsPressed('ArrowDown')) {
-        this.moveShapeVertically(this.activeShape)
+        this._activeShape.moveVertically(this._activeShape)
       }
     }
-  }
-
-  protected moveShapeVertically(shape: AbstractShape, direction: string = 'down') {
-    let difference = 0
-    switch (direction) {
-      case 'up':
-        difference -= Field.cellSize
-        break
-      case 'down':
-        difference += Field.cellSize
-        break
-    }
-
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        cell.position.y += difference
-      })
-    })
-
-    if (this.hasHitBottom(shape) || this.collidingWithFixedShape(shape) === true) {
-      shape.cells.forEach((row) => {
-        row.forEach((cell) => {
-          cell.position.y -= Field.cellSize
-        })
-      })
-      this.fixedShapes.push(shape)
-      this.spawnShape()
-    }
-  }
-
-  protected moveShapeHorizontally(shape: AbstractShape, direction: string) {
-    let difference = 0
-    switch (direction) {
-      case 'left':
-        difference -= Field.cellSize
-        break
-      case 'right':
-        difference += Field.cellSize
-        break
-    }
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        cell.position.x += difference
-      })
-    })
-
-    if (this.collidingWithFixedShape(shape) === true) {
-      shape.cells.forEach((row) => {
-        row.forEach((cell) => {
-          cell.position.x -= difference
-        })
-      })
-    }
-
-    this.keepInsideField(shape)
-
-    this.draw()
-  }
-
-  protected keepInsideField(shape: AbstractShape): void {
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        if (cell.position.x === this.width) {
-          this.moveShapeHorizontally(shape, 'left')
-        }
-        if (cell.position.x < 0) {
-          this.moveShapeHorizontally(shape, 'right')
-        }
-      })
-    })
-  }
-
-  protected hasHitBottom(shape: AbstractShape): boolean {
-    let lowestPoint = 0
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        lowestPoint = cell.position.y
-      })
-    })
-    return lowestPoint === this.height
-  }
-
-  protected collidingWithFixedShape(shape: AbstractShape): boolean {
-    let collision = false
-    shape.cells.forEach((activeRow) => {
-      activeRow.forEach((activeCell) => {
-        this.fixedShapes.forEach((fixedShape) => {
-          fixedShape.cells.forEach((fixedRow) => {
-            fixedRow.forEach((fixedCell) => {
-              if (activeCell.position.x === fixedCell.position.x && activeCell.position.y === fixedCell.position.y) {
-                collision = true
-              }
-            })
-          })
-        })
-      })
-    })
-    return collision
   }
 
   protected clear() {
     this.ctx.clearRect(0, 0, this.width, this.height)
+  }
+
+  public set activeShape(shape: AbstractShape|null) {
+    this._activeShape = shape
+  }
+
+  public get fixedShapes(): AbstractShape[] {
+    return this._fixedShapes
   }
 }
