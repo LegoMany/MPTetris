@@ -1,7 +1,8 @@
-import { AbstractShape } from 'shapes/AbstractShape';
-import { Coordinate } from 'shapes/Coordinate';
-import { Shapes } from 'shapes/Shapes';
-import { IHasLifecycle } from 'engine/behavior/HasLifecycle';
+import { AbstractShape } from 'shapes/AbstractShape'
+import { Coordinate } from 'shapes/Coordinate'
+import { Shapes } from 'shapes/Shapes'
+import { IHasLifecycle } from 'engine/behavior/HasLifecycle'
+import { InputManager } from 'engine/InputManager'
 
 export class Field implements IHasLifecycle {
   static readonly cellSize: number = 20
@@ -10,8 +11,12 @@ export class Field implements IHasLifecycle {
   public height: number
 
   protected ctx: CanvasRenderingContext2D
+
   protected lastDrawnFrame: number = 0
-  protected speed: number = 500
+  protected speed: number = 31 * 16
+
+  protected lastKeyFrame: number = 0
+  protected keySpeed: number = 16 * 3
 
   protected fixedShapes: AbstractShape[] = []
   protected activeShape: AbstractShape = null
@@ -24,31 +29,14 @@ export class Field implements IHasLifecycle {
     this.width = element.width
 
     this.spawnShape()
-
-    // TODO: pls change this
-    window.addEventListener('keydown', (e) => {
-      switch (e.key) {
-        case 'ArrowLeft':
-          if (this.activeShape !== null) {
-            this.moveShapeHorizontally(this.activeShape, 'left')
-          }
-          break
-        case 'ArrowRight':
-          if (this.activeShape !== null) {
-            this.moveShapeHorizontally(this.activeShape, 'right')
-          }
-          break
-        case 'ArrowDown':
-          if (this.activeShape !== null) {
-            this.moveShapeVertically(this.activeShape)
-            this.draw()
-          }
-          break
-      }
-    })
   }
 
   public update(frameTime: DOMHighResTimeStamp) {
+    if (frameTime > this.lastKeyFrame + this.keySpeed) {
+      this.handleKeys()
+      this.lastKeyFrame = frameTime
+    }
+
     if (frameTime > this.lastDrawnFrame + this.speed) {
       this.moveActiveShapesDown()
       this.lastDrawnFrame = frameTime
@@ -91,6 +79,21 @@ export class Field implements IHasLifecycle {
   public moveActiveShapesDown() {
     if (this.activeShape instanceof AbstractShape) {
       this.moveShapeVertically(this.activeShape)
+    }
+  }
+
+  protected handleKeys(): void {
+    let inputManager = InputManager.instance
+    if (this.activeShape !== null) {
+      if (inputManager.keyIsPressed('ArrowLeft')) {
+        this.moveShapeHorizontally(this.activeShape, 'left')
+      }
+      if (inputManager.keyIsPressed('ArrowRight')) {
+        this.moveShapeHorizontally(this.activeShape, 'right')
+      }
+      if (inputManager.keyIsPressed('ArrowDown')) {
+        this.moveShapeVertically(this.activeShape)
+      }
     }
   }
 
