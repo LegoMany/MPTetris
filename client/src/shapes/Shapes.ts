@@ -6,7 +6,7 @@ import { SShape } from './SShape'
 import { IShape } from './IShape'
 import { OShape } from './OShape'
 
-export let Shapes = {
+export const Shapes = {
   0: LShape,
   1: JShape,
   2: TShape,
@@ -15,4 +15,3 @@ export let Shapes = {
   5: IShape,
   6: OShape,
 }
-

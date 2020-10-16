@@ -13,7 +13,6 @@ export class Game extends HasLifecycle implements IHasLifecycle {
   }
 
   update(frameTime: DOMHighResTimeStamp) {
-    this.field.update(frameTime);
-    this.field.draw()
+    this.field.update(frameTime)
   }
 }

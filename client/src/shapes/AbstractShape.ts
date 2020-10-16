@@ -1,4 +1,4 @@
-import { Coordinate } from 'shapes/Coordinate';
+import { Coordinate } from 'shapes/Coordinate'
 import { Field } from 'engine/Field'
 import { Cell } from 'shapes/Cell'
 
@@ -18,10 +18,10 @@ export abstract class AbstractShape {
   }
 
   public initializeCells(): void {
-    this.definition.forEach((cellDefinition) => {
-      let newCell = new Cell(
+    this.definition.forEach(cellDefinition => {
+      const newCell = new Cell(
         this.spawnPosition.x + cellDefinition[1] * Field.cellSize,
-        this.spawnPosition.y + cellDefinition[0] * Field.cellSize,
+        this.spawnPosition.y + cellDefinition[0] * Field.cellSize
       )
       this._cells.push(newCell)
     })
@@ -30,7 +30,7 @@ export abstract class AbstractShape {
   protected getGridSize(): number {
     let maxSize = 0
 
-    this.definition.forEach((cellDefinition) => {
+    this.definition.forEach(cellDefinition => {
       if (cellDefinition[0] > maxSize) {
         maxSize = cellDefinition[0]
       }
@@ -38,11 +38,13 @@ export abstract class AbstractShape {
         maxSize = cellDefinition[1]
       }
     })
+
     return maxSize
   }
 
-  public moveVertically(shape: AbstractShape, direction: string = 'down') {
+  public moveVertically(direction = 'down') {
     let difference = 0
+
     switch (direction) {
       case 'up':
         difference -= Field.cellSize
@@ -52,21 +54,23 @@ export abstract class AbstractShape {
         break
     }
 
-    shape._cells.forEach((cell) => {
+    this._cells.forEach(cell => {
       cell.position.y += difference
     })
 
-    if (this.hasHitBottom(shape) || this.collidingWithFixedShape(shape) === true) {
-      shape._cells.forEach((cell) => {
+    if (this.hasHitBottom() || this.collidingWithFixedShape() === true) {
+      this._cells.forEach(cell => {
         cell.position.y -= Field.cellSize
       })
-      this.field.fixShape(shape)
+
+      this.field.fixShape(this)
       this.field.activeShape = null
     }
   }
 
-  public moveHorizontally(shape: AbstractShape, direction: string) {
+  public moveHorizontally(direction: string) {
     let difference = 0
+
     switch (direction) {
       case 'left':
         difference -= Field.cellSize
@@ -75,49 +79,55 @@ export abstract class AbstractShape {
         difference += Field.cellSize
         break
     }
-    shape._cells.forEach((cell) => {
+
+    this._cells.forEach(cell => {
       cell.position.x += difference
     })
 
-    if (this.collidingWithFixedShape(shape) === true) {
-      shape._cells.forEach((cell) => {
+    if (this.collidingWithFixedShape() === true) {
+      this._cells.forEach(cell => {
         cell.position.x -= difference
       })
     }
 
-    this.keepInsideField(shape)
+    this.keepInsideField()
   }
 
-  protected keepInsideField(shape: AbstractShape): void {
-    shape._cells.forEach((cell) => {
+  protected keepInsideField(): void {
+    this._cells.forEach(cell => {
       if (cell.position.x === this.field.width) {
-        shape.moveHorizontally(shape, 'left')
+        this.moveHorizontally('left')
       }
+
       if (cell.position.x < 0) {
-        shape.moveHorizontally(shape, 'right')
+        this.moveHorizontally('right')
       }
     })
   }
 
-  protected hasHitBottom(shape: AbstractShape): boolean {
+  protected hasHitBottom(): boolean {
     let lowestPoint = 0
-    shape._cells.forEach((cell) => {
+
+    this._cells.forEach(cell => {
       lowestPoint = cell.position.y
     })
+
     return lowestPoint === this.field.height
   }
 
-  protected collidingWithFixedShape(shape: AbstractShape): boolean {
+  protected collidingWithFixedShape(): boolean {
     let collision = false
-    shape._cells.forEach((activeCell) => {
-      this.field.fixedShapes.forEach((fixedShape) => {
-        fixedShape._cells.forEach((fixedCell) => {
+
+    this._cells.forEach(activeCell => {
+      this.field.fixedShapes.forEach(fixedShape => {
+        fixedShape._cells.forEach(fixedCell => {
           if (activeCell.position.x === fixedCell.position.x && activeCell.position.y === fixedCell.position.y) {
             collision = true
           }
         })
       })
     })
+
     return collision
   }
 

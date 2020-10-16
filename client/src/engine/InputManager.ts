@@ -2,19 +2,19 @@ export class InputManager {
   protected pressedKeys: string[] = []
 
   public keyIsPressed(key: string): boolean {
-    return this.pressedKeys.includes(key);
+    return this.pressedKeys.includes(key)
   }
 
   /** Singleton stuff */
   private static _instance: InputManager
 
   private constructor() {
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', e => {
       if (!this.pressedKeys.includes(e.key)) {
         this.pressedKeys.push(e.key)
       }
     })
-    window.addEventListener('keyup', (e) => {
+    window.addEventListener('keyup', e => {
       this.pressedKeys.splice(this.pressedKeys.indexOf(e.key), 1)
     })
   }

@@ -1,5 +1,4 @@
 import { AbstractShape } from 'shapes/AbstractShape'
-import { Cell } from 'shapes/Cell'
 
 export class OShape extends AbstractShape {
   definition = [
