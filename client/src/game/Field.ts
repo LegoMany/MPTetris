@@ -1,8 +1,8 @@
 import { AbstractShape } from './shapes/AbstractShape'
 import { Coordinate } from './shapes/Coordinate'
-import { Shapes } from './shapes/Shapes'
 import { IHasLifecycle } from '../engine/behavior/HasLifecycle'
 import { InputManager } from '../engine/InputManager'
+import { ShapeList } from './shapes/ShapeList'
 
 export class Field implements IHasLifecycle {
   static readonly cellSize: number = 20
@@ -20,6 +20,8 @@ export class Field implements IHasLifecycle {
 
   protected _fixedShapes: AbstractShape[] = []
   protected _activeShape: AbstractShape = null
+
+  protected shapeList: ShapeList = new ShapeList()
 
   constructor(canvasSelector: string) {
     const element: HTMLCanvasElement = document.querySelector(canvasSelector)
@@ -63,8 +65,7 @@ export class Field implements IHasLifecycle {
   }
 
   public spawnShape() {
-    const randomNumber = Math.floor(Math.random() * Math.floor(6))
-    const shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
+    const shape = new (this.shapeList.getShape())(new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
     shape.initializeCells()
 
     this._activeShape = shape
