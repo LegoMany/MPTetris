@@ -56,10 +56,8 @@ export class Field implements IHasLifecycle {
     }
     this.ctx.fillStyle = '#000'
     shapes.forEach((shape) => {
-      shape.cells.forEach((row) => {
-        row.forEach((cell) => {
-          this.ctx.fillRect(cell.position.x, cell.position.y, Field.cellSize, Field.cellSize)
-        })
+      shape.cells.forEach((cell) => {
+        this.ctx.fillRect(cell.position.x, cell.position.y, Field.cellSize, Field.cellSize)
       })
     })
   }
@@ -67,15 +65,7 @@ export class Field implements IHasLifecycle {
   public spawnShape() {
     let randomNumber = Math.floor(Math.random() * Math.floor(6))
     let shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this);
-
-    let x = shape.spawnPosition.x
-    let y = shape.spawnPosition.y
-
-    shape.cells.forEach((row) => {
-      row.forEach((cell) => {
-        cell.position = new Coordinate((cell.column * Field.cellSize) + x, (cell.row * Field.cellSize) + y)
-      })
-    })
+    shape.initializeCells()
 
     this._activeShape = shape
   }
@@ -109,7 +99,7 @@ export class Field implements IHasLifecycle {
     this.ctx.clearRect(0, 0, this.width, this.height)
   }
 
-  public set activeShape(shape: AbstractShape|null) {
+  public set activeShape(shape: AbstractShape | null) {
     this._activeShape = shape
   }
 
