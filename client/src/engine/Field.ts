@@ -98,7 +98,7 @@ export class Field {
       })
     })
 
-    if (this.shapeHitBottom(shape) || this.collidingWithFixedShape(shape) === true) {
+    if (this.hasHitBottom(shape) || this.collidingWithFixedShape(shape) === true) {
       shape.cells.forEach((row) => {
         row.forEach((cell) => {
           cell.position.y -= Field.cellSize
@@ -133,10 +133,25 @@ export class Field {
       })
     }
 
+    this.keepInsideField(shape)
+
     this.draw()
   }
 
-  protected shapeHitBottom(shape: AbstractShape): boolean {
+  protected keepInsideField(shape: AbstractShape): void {
+    shape.cells.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell.position.x === this.width) {
+          this.moveShapeHorizontally(shape, 'left')
+        }
+        if (cell.position.x < 0) {
+          this.moveShapeHorizontally(shape, 'right')
+        }
+      })
+    })
+  }
+
+  protected hasHitBottom(shape: AbstractShape): boolean {
     let lowestPoint = 0
     shape.cells.forEach((row) => {
       row.forEach((cell) => {
