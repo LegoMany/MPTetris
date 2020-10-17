@@ -18,13 +18,17 @@ export abstract class AbstractShape {
   }
 
   public initializeCells(): void {
-    this.definition.forEach(cellDefinition => {
-      const newCell = new Cell(
-        this.spawnPosition.x + cellDefinition[1] * Field.cellSize,
-        this.spawnPosition.y + cellDefinition[0] * Field.cellSize
-      )
+    this.definition.forEach((row, rowIndex) => {
+      row.forEach((cellValue, cellIndex) => {
+        if (cellValue === 1) {
+          const newCell = new Cell(
+            this.spawnPosition.x + cellIndex * Field.cellSize,
+            this.spawnPosition.y + rowIndex * Field.cellSize
+          )
 
-      this._cells.push(newCell)
+          this._cells.push(newCell)
+        }
+      })
     })
   }
 
