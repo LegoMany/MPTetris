@@ -1,9 +1,9 @@
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
-import typescript from '@rollup/plugin-typescript';
-import htmlTemplate from 'rollup-plugin-generate-html-template';
-import eslint from '@rbnlffl/rollup-plugin-eslint';
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from 'rollup-plugin-commonjs'
+import { terser } from 'rollup-plugin-terser'
+import typescript from '@rollup/plugin-typescript'
+import htmlTemplate from 'rollup-plugin-generate-html-template'
+import eslint from '@rbnlffl/rollup-plugin-eslint'
 
 export default {
   input: 'src/index.ts',
@@ -13,7 +13,7 @@ export default {
   },
   plugins: [
     eslint({
-      extensions: ['.ts', '.js']
+      extensions: ['.ts', '.js'],
     }),
     resolve({
       browser: true,
@@ -23,6 +23,6 @@ export default {
     htmlTemplate({
       template: 'src/index.html',
       target: 'dist/index.html',
-    })
+    }),
   ],
-};
+}

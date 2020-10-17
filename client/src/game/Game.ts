@@ -1,5 +1,5 @@
-import { HasLifecycle, IHasLifecycle } from 'engine/behavior/HasLifecycle'
-import { Field } from 'engine/Field'
+import { HasLifecycle, IHasLifecycle } from '../engine/behavior/HasLifecycle'
+import { Field } from './Field'
 
 export class Game extends HasLifecycle implements IHasLifecycle {
   protected field: Field
@@ -13,7 +13,6 @@ export class Game extends HasLifecycle implements IHasLifecycle {
   }
 
   update(frameTime: DOMHighResTimeStamp) {
-    this.field.update(frameTime);
-    this.field.draw()
+    this.field.update(frameTime)
   }
 }

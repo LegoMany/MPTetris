@@ -1,8 +1,8 @@
-import { AbstractShape } from 'shapes/AbstractShape'
-import { Coordinate } from 'shapes/Coordinate'
-import { Shapes } from 'shapes/Shapes'
-import { IHasLifecycle } from 'engine/behavior/HasLifecycle'
-import { InputManager } from 'engine/InputManager'
+import { AbstractShape } from './shapes/AbstractShape'
+import { Coordinate } from './shapes/Coordinate'
+import { IHasLifecycle } from '../engine/behavior/HasLifecycle'
+import { InputManager } from '../engine/InputManager'
+import { ShapeList } from './shapes/ShapeList'
 
 export class Field implements IHasLifecycle {
   static readonly cellSize: number = 20
@@ -12,17 +12,19 @@ export class Field implements IHasLifecycle {
 
   protected ctx: CanvasRenderingContext2D
 
-  protected lastDrawnFrame: number = 0
+  protected lastDrawnFrame = 0
   protected speed: number = 31 * 16
 
-  protected lastKeyFrame: number = 0
+  protected lastKeyFrame = 0
   protected keySpeed: number = 16 * 3
 
   protected _fixedShapes: AbstractShape[] = []
   protected _activeShape: AbstractShape = null
 
+  protected shapeList: ShapeList = new ShapeList()
+
   constructor(canvasSelector: string) {
-    let element: HTMLCanvasElement = document.querySelector(canvasSelector);
+    const element: HTMLCanvasElement = document.querySelector(canvasSelector)
     this.ctx = element.getContext('2d')
 
     this.height = element.height
@@ -45,26 +47,31 @@ export class Field implements IHasLifecycle {
       this.moveActiveShapesDown()
       this.lastDrawnFrame = frameTime
     }
+
     this.draw()
   }
 
   public draw() {
+    const shapes = [...this.fixedShapes]
+
     this.clear()
-    let shapes = [...this.fixedShapes]
+
     if (this._activeShape !== null) {
       shapes.push(this._activeShape)
     }
+
     this.ctx.fillStyle = '#000'
-    shapes.forEach((shape) => {
-      shape.cells.forEach((cell) => {
+
+    shapes.forEach(shape => {
+      shape.cells.forEach(cell => {
         this.ctx.fillRect(cell.position.x, cell.position.y, Field.cellSize, Field.cellSize)
       })
     })
   }
 
   public spawnShape() {
-    let randomNumber = Math.floor(Math.random() * Math.floor(6))
-    let shape = new Shapes[randomNumber](new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this);
+    // HACK: apparently TypeScript doesn't like returning constructors and directly calling them. "as any" fixes it (???)
+    const shape = new (this.shapeList.getShape() as any)(new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
     shape.initializeCells()
 
     this._activeShape = shape
@@ -72,7 +79,7 @@ export class Field implements IHasLifecycle {
 
   public moveActiveShapesDown() {
     if (this._activeShape instanceof AbstractShape) {
-      this._activeShape.moveVertically(this._activeShape)
+      this._activeShape.moveVertically()
     }
   }
 
@@ -81,16 +88,18 @@ export class Field implements IHasLifecycle {
   }
 
   protected handleKeys(): void {
-    let inputManager = InputManager.instance
+    const inputManager = InputManager.instance
     if (this._activeShape !== null) {
       if (inputManager.keyIsPressed('ArrowLeft')) {
-        this._activeShape.moveHorizontally(this._activeShape, 'left')
+        this._activeShape.moveHorizontally('left')
       }
+
       if (inputManager.keyIsPressed('ArrowRight')) {
-        this._activeShape.moveHorizontally(this._activeShape, 'right')
+        this._activeShape.moveHorizontally('right')
       }
+
       if (inputManager.keyIsPressed('ArrowDown')) {
-        this._activeShape.moveVertically(this._activeShape)
+        this._activeShape.moveVertically()
       }
     }
   }
