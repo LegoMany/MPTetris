@@ -1,8 +1,15 @@
 export class InputManager {
   protected pressedKeys: string[] = []
+  protected illegalKeys: string[] = []
 
   public keyIsPressed(key: string): boolean {
     return this.pressedKeys.includes(key)
+  }
+
+  /* Prevent key from being "pressed" until it's next keyup event */
+  public dissalowKey(key: string): void {
+    this.illegalKeys.push(key)
+    this.pressedKeys.splice(this.pressedKeys.indexOf(key), 1)
   }
 
   /** Singleton stuff */
@@ -10,13 +17,18 @@ export class InputManager {
 
   private constructor() {
     window.addEventListener('keydown', e => {
-      if (!this.pressedKeys.includes(e.key)) {
+      if (!this.pressedKeys.includes(e.key) && !this.illegalKeys.includes(e.key)) {
         this.pressedKeys.push(e.key)
       }
     })
 
     window.addEventListener('keyup', e => {
-      this.pressedKeys.splice(this.pressedKeys.indexOf(e.key), 1)
+      if (this.pressedKeys.includes(e.key)) {
+        this.pressedKeys.splice(this.pressedKeys.indexOf(e.key), 1)
+      }
+      if (this.illegalKeys.includes(e.key)) {
+        this.illegalKeys.splice(this.pressedKeys.indexOf(e.key), 1)
+      }
     })
   }
 

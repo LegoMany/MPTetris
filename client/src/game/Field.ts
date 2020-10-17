@@ -5,7 +5,7 @@ import { InputManager } from '../engine/InputManager'
 import { ShapeList } from './shapes/ShapeList'
 
 export class Field implements IHasLifecycle {
-  static readonly cellSize: number = 20
+  static readonly CELL_SIZE: number = 20
 
   public width: number
   public height: number
@@ -64,14 +64,14 @@ export class Field implements IHasLifecycle {
 
     shapes.forEach(shape => {
       shape.cells.forEach(cell => {
-        this.ctx.fillRect(cell.position.x, cell.position.y, Field.cellSize, Field.cellSize)
+        this.ctx.fillRect(cell.position.x, cell.position.y, Field.CELL_SIZE, Field.CELL_SIZE)
       })
     })
   }
 
   public spawnShape() {
     // HACK: apparently TypeScript doesn't like returning constructors and directly calling them. "as any" fixes it (???)
-    const shape = new (this.shapeList.getShape() as any)(new Coordinate(this.width / 2 - Field.cellSize / 2, 0), this)
+    const shape = new (this.shapeList.getShape() as any)(new Coordinate(this.width / 2 - Field.CELL_SIZE / 2, 0), this)
     shape.initializeCells()
 
     this._activeShape = shape
@@ -100,6 +100,16 @@ export class Field implements IHasLifecycle {
 
       if (inputManager.keyIsPressed('ArrowDown')) {
         this._activeShape.moveVertically()
+      }
+
+      if (inputManager.keyIsPressed('a')) {
+        this._activeShape.rotate(AbstractShape.ROTATION_COUNTER_CLOCKWISE)
+        inputManager.dissalowKey('a')
+      }
+
+      if (inputManager.keyIsPressed('d')) {
+        this._activeShape.rotate(AbstractShape.ROTATION_CLOCKWISE)
+        inputManager.dissalowKey('d')
       }
     }
   }

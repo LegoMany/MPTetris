@@ -3,6 +3,9 @@ import { Field } from '../Field'
 import { Cell } from './Cell'
 
 export abstract class AbstractShape {
+  static readonly ROTATION_CLOCKWISE = 1
+  static readonly ROTATION_COUNTER_CLOCKWISE = 2
+
   public id = 0
   public color = '#000'
   public spawnPosition: Coordinate
@@ -17,13 +20,17 @@ export abstract class AbstractShape {
     this.field = field
   }
 
-  public initializeCells(): void {
+  public initializeCells(position: Coordinate = null): void {
+    if (position === null) {
+      position = this.spawnPosition
+    }
+console.table(this.definition)
     this.definition.forEach((row, rowIndex) => {
       row.forEach((cellValue, cellIndex) => {
         if (cellValue === 1) {
           const newCell = new Cell(
-            this.spawnPosition.x + cellIndex * Field.cellSize,
-            this.spawnPosition.y + rowIndex * Field.cellSize
+            position.x + cellIndex * Field.CELL_SIZE,
+            position.y + rowIndex * Field.CELL_SIZE
           )
 
           this._cells.push(newCell)
@@ -32,19 +39,58 @@ export abstract class AbstractShape {
     })
   }
 
-  protected getGridSize(): number {
-    let maxSize = 0
+  public rotate(direction: number = AbstractShape.ROTATION_CLOCKWISE): void {
+    let gridPosition = this.getGridPosition()
+    let originalCells = this.definition.slice()
+    originalCells.reverse()
 
-    this.definition.forEach(cellDefinition => {
-      if (cellDefinition[0] > maxSize) {
-        maxSize = cellDefinition[0]
+    let rotatedRowsCount = originalCells[0].length
+    let rotatedColumnsCount = originalCells.length
+
+    let rotatedCells = []
+    for (let i = 0; i < rotatedRowsCount; i++) {
+      let rotatedRow = []
+      for (let j = 0; j < rotatedColumnsCount; j++) {
+        rotatedRow.push(originalCells[j][i])
       }
-      if (cellDefinition[1] > maxSize) {
-        maxSize = cellDefinition[1]
+      if (direction === AbstractShape.ROTATION_COUNTER_CLOCKWISE) {
+        rotatedRow.reverse()
+      }
+      rotatedCells.push(rotatedRow);
+    }
+    if (direction === AbstractShape.ROTATION_COUNTER_CLOCKWISE) {
+      rotatedCells.reverse()
+    }
+
+    this.definition = rotatedCells
+    this._cells = []
+    this.initializeCells(gridPosition)
+    this.keepInsideField()
+    if (this.hasHitBottom() || this.collidingWithFixedShape() === true) {
+      this._cells.forEach(cell => {
+        cell.position.y -= Field.CELL_SIZE
+      })
+
+      this.field.fixShape(this)
+      this.field.activeShape = null
+    }
+  }
+
+  protected getGridPosition(): Coordinate {
+    let lowestX, lowestY = 0
+    lowestX = this.cells[0].position.x
+    lowestY = this.cells[0].position.y
+
+    this.cells.forEach((cell) => {
+      if (cell.position.x < lowestX) {
+        lowestX = cell.position.x
+      }
+      if (cell.position.y < lowestY) {
+        lowestY = cell.position.y
       }
     })
 
-    return maxSize
+    return new Coordinate(lowestX, lowestY)
   }
 
   public moveVertically(direction = 'down') {
@@ -52,10 +98,10 @@ export abstract class AbstractShape {
 
     switch (direction) {
       case 'up':
-        difference -= Field.cellSize
+        difference -= Field.CELL_SIZE
         break
       case 'down':
-        difference += Field.cellSize
+        difference += Field.CELL_SIZE
         break
     }
 
@@ -65,7 +111,7 @@ export abstract class AbstractShape {
 
     if (this.hasHitBottom() || this.collidingWithFixedShape() === true) {
       this._cells.forEach(cell => {
-        cell.position.y -= Field.cellSize
+        cell.position.y -= Field.CELL_SIZE
       })
 
       this.field.fixShape(this)
@@ -78,10 +124,10 @@ export abstract class AbstractShape {
 
     switch (direction) {
       case 'left':
-        difference -= Field.cellSize
+        difference -= Field.CELL_SIZE
         break
       case 'right':
-        difference += Field.cellSize
+        difference += Field.CELL_SIZE
         break
     }
 
