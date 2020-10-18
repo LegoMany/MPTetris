@@ -81,7 +81,7 @@ console.table(this.definition)
     lowestX = this.cells[0].position.x
     lowestY = this.cells[0].position.y
 
-    this.cells.forEach((cell) => {
+    this.cells.forEach(cell => {
       if (cell.position.x < lowestX) {
         lowestX = cell.position.x
       }
