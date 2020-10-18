@@ -24,7 +24,7 @@ export abstract class AbstractShape {
     if (position === null) {
       position = this.spawnPosition
     }
-console.table(this.definition)
+
     this.definition.forEach((row, rowIndex) => {
       row.forEach((cellValue, cellIndex) => {
         if (cellValue === 1) {
@@ -77,9 +77,32 @@ console.table(this.definition)
   }
 
   protected getGridPosition(): Coordinate {
-    let lowestX, lowestY = 0
-    lowestX = this.cells[0].position.x
-    lowestY = this.cells[0].position.y
+    let lowestX = this.cells[0].position.x
+    let lowestY = this.cells[0].position.y
+
+    let offsetX: number
+    let offsetY: number = 0
+
+    for (let rowIndex = 0; rowIndex < this.definition.length; rowIndex++) {
+      if (this.definition[rowIndex].includes(1) === false) {
+        offsetY += Field.CELL_SIZE
+      } else {
+        break
+      }
+    }
+
+    let firstRowEmptyColumns = this.definition[0].indexOf(1)
+    let emptyColumns = firstRowEmptyColumns === -1 ? this.definition.length : firstRowEmptyColumns
+    for (let rowIndex = 0; rowIndex < this.definition.length; rowIndex++) {
+      let rowEmptyColumns = this.definition[rowIndex].indexOf(1)
+      if (rowEmptyColumns !== -1 && rowEmptyColumns < emptyColumns) {
+        emptyColumns = rowEmptyColumns
+      }
+      if (rowEmptyColumns === 0) {
+        break
+      }
+    }
+    offsetX = emptyColumns * Field.CELL_SIZE
 
     this.cells.forEach(cell => {
       if (cell.position.x < lowestX) {
@@ -90,7 +113,7 @@ console.table(this.definition)
       }
     })
 
-    return new Coordinate(lowestX, lowestY)
+    return new Coordinate(lowestX - offsetX, lowestY - offsetY)
   }
 
   public moveVertically(direction = 'down') {
