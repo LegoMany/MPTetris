@@ -51,7 +51,7 @@ export class Field implements IHasLifecycle {
     this.draw()
   }
 
-  public draw() {
+  protected draw() {
     const shapes = [...this.fixedShapes]
 
     this.clear()
@@ -85,11 +85,42 @@ export class Field implements IHasLifecycle {
 
   public fixShape(shape: AbstractShape): void {
     this._fixedShapes.push(shape)
+    this.removeFullRows(shape)
+  }
+
+  protected removeFullRows(shape: AbstractShape) {
+    let cellsPerY = []
+    this._fixedShapes.forEach((shape) => {
+      shape.cells.forEach((cell) => {
+        if (cellsPerY[cell.position.y] === undefined) {
+          cellsPerY[cell.position.y] = 0
+        }
+        cellsPerY[cell.position.y] += 1
+      })
+    })
+
+    let maxCellsPerRow = this.width / Field.CELL_SIZE
+    let fullRows = []
+    cellsPerY.forEach((cellsCount, y) => {
+      if (cellsCount >= maxCellsPerRow) {
+        fullRows.push(y)
+      }
+    })
+
+    if (fullRows.length > 0) {
+      this._fixedShapes.forEach(shape => {
+        shape.cells.forEach((cell, index) => {
+          if (fullRows.includes(cell.position.y)) {
+            delete shape.cells[index]
+          }
+        })
+      })
+    }
   }
 
   protected handleKeys(): void {
     const inputManager = InputManager.instance
-    if (this._activeShape !== null) {
+    if (this._activeShape instanceof AbstractShape) {
       if (inputManager.keyIsPressed('ArrowLeft')) {
         this._activeShape.moveHorizontally('left')
       }
