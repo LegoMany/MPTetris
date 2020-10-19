@@ -1,10 +1,11 @@
-import { AbstractShape } from './shapes/AbstractShape'
-import { Coordinate } from './shapes/Coordinate'
-import { IHasLifecycle } from '../engine/behavior/HasLifecycle'
-import { InputManager } from '../engine/InputManager'
-import { ShapeList } from './shapes/ShapeList'
+import { AbstractShape } from '../shapes/AbstractShape'
+import { Coordinate } from '../shapes/Coordinate'
+import { IHasLifecycle } from '../../engine/behavior/HasLifecycle'
+import { InputManager } from '../../engine/InputManager'
+import { ShapeList } from '../shapes/ShapeList'
+import { Scene } from '../../engine/SceneManager'
 
-export class Field implements IHasLifecycle {
+export class Field extends Scene implements IHasLifecycle {
   static readonly CELL_SIZE: number = 20
 
   public width: number
@@ -24,13 +25,24 @@ export class Field implements IHasLifecycle {
   protected shapeList: ShapeList = new ShapeList()
 
   constructor(canvasSelector: string) {
+    super()
+
     const element: HTMLCanvasElement = document.querySelector(canvasSelector)
     this.ctx = element.getContext('2d')
 
     this.height = element.height
     this.width = element.width
+  }
 
+  public load() {
     this.spawnShape()
+  }
+
+  public unload() {
+    this.lastDrawnFrame = 0
+    this.lastKeyFrame = 0
+    this._fixedShapes = []
+    this._activeShape = null
   }
 
   public update(frameTime: DOMHighResTimeStamp) {

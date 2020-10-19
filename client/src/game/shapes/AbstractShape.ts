@@ -1,5 +1,5 @@
 import { Coordinate } from './Coordinate'
-import { Field } from '../Field'
+import { Field } from '../scenes/Field'
 import { Cell } from './Cell'
 
 export abstract class AbstractShape {
