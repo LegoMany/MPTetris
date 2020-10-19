@@ -115,6 +115,15 @@ export class Field implements IHasLifecycle {
           }
         })
       })
+
+      let highestFullRow = Math.min(...fullRows)
+      this._fixedShapes.forEach(shape => {
+        shape.cells.forEach((cell) => {
+          if (cell.position.y < highestFullRow) {
+            cell.position.y += Field.CELL_SIZE
+          }
+        })
+      })
     }
   }
 
