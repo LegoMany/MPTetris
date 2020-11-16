@@ -66,7 +66,7 @@ export abstract class AbstractShape {
     this._cells = []
     this.initializeCells(gridPosition)
     this.keepInsideField()
-    if (this.hasHitBottom() || this.collidingWithFixedShape() === true) {
+    if (this.collidingWithFixedShape() === true) {
       this._cells.forEach(cell => {
         cell.position.y -= Field.CELL_SIZE
       })
@@ -167,6 +167,22 @@ export abstract class AbstractShape {
     this.keepInsideField()
   }
 
+  public collidingWithFixedShape(): boolean {
+    let collision = false
+
+    this._cells.forEach(activeCell => {
+      this.field.fixedShapes.forEach(fixedShape => {
+        fixedShape._cells.forEach(fixedCell => {
+          if (activeCell.position.x === fixedCell.position.x && activeCell.position.y === fixedCell.position.y) {
+            collision = true
+          }
+        })
+      })
+    })
+
+    return collision
+  }
+
   protected keepInsideField(): void {
     this._cells.forEach(cell => {
       if (cell.position.x === this.field.width) {
@@ -187,22 +203,6 @@ export abstract class AbstractShape {
     })
 
     return lowestPoint === this.field.height
-  }
-
-  protected collidingWithFixedShape(): boolean {
-    let collision = false
-
-    this._cells.forEach(activeCell => {
-      this.field.fixedShapes.forEach(fixedShape => {
-        fixedShape._cells.forEach(fixedCell => {
-          if (activeCell.position.x === fixedCell.position.x && activeCell.position.y === fixedCell.position.y) {
-            collision = true
-          }
-        })
-      })
-    })
-
-    return collision
   }
 
   public get cells(): Cell[] {

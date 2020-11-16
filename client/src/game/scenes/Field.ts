@@ -22,6 +22,8 @@ export class Field extends Scene implements IHasLifecycle {
   protected _fixedShapes: AbstractShape[] = []
   protected _activeShape: AbstractShape = null
 
+  protected _gameOver: boolean = false
+
   protected shapeList: ShapeList = new ShapeList()
 
   constructor(canvasSelector: string) {
@@ -46,8 +48,17 @@ export class Field extends Scene implements IHasLifecycle {
   }
 
   public update(frameTime: DOMHighResTimeStamp) {
+    if (this._gameOver) {
+      return
+    }
+    console.log('update')
+
     if (this._activeShape === null) {
       this.spawnShape()
+      if (this._activeShape.collidingWithFixedShape()) {
+        this._gameOver = true
+        alert('Game over!')
+      }
     }
 
     if (frameTime > this.lastKeyFrame + this.keySpeed) {
@@ -61,24 +72,6 @@ export class Field extends Scene implements IHasLifecycle {
     }
 
     this.draw()
-  }
-
-  protected draw() {
-    const shapes = [...this.fixedShapes]
-
-    this.clear()
-
-    if (this._activeShape !== null) {
-      shapes.push(this._activeShape)
-    }
-
-    this.ctx.fillStyle = '#000'
-
-    shapes.forEach(shape => {
-      shape.cells.forEach(cell => {
-        this.ctx.fillRect(cell.position.x, cell.position.y, Field.CELL_SIZE, Field.CELL_SIZE)
-      })
-    })
   }
 
   public spawnShape() {
@@ -98,6 +91,24 @@ export class Field extends Scene implements IHasLifecycle {
   public fixShape(shape: AbstractShape): void {
     this._fixedShapes.push(shape)
     this.removeFullRows(shape)
+  }
+
+  protected draw() {
+    const shapes = [...this.fixedShapes]
+
+    this.clear()
+
+    if (this._activeShape !== null) {
+      shapes.push(this._activeShape)
+    }
+
+    this.ctx.fillStyle = '#000'
+
+    shapes.forEach(shape => {
+      shape.cells.forEach(cell => {
+        this.ctx.fillRect(cell.position.x, cell.position.y, Field.CELL_SIZE, Field.CELL_SIZE)
+      })
+    })
   }
 
   protected removeFullRows(shape: AbstractShape) {
