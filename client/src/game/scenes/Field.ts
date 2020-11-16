@@ -142,7 +142,7 @@ export class Field extends Scene implements IHasLifecycle {
       this._fixedShapes.forEach(shape => {
         shape.cells.forEach((cell) => {
           if (cell.position.y < highestFullRow) {
-            cell.position.y += Field.CELL_SIZE
+            cell.position.y += Field.CELL_SIZE * fullRows.length
           }
         })
       })
