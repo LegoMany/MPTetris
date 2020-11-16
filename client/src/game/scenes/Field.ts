@@ -22,6 +22,8 @@ export class Field extends Scene implements IHasLifecycle {
   protected _fixedShapes: AbstractShape[] = []
   protected _activeShape: AbstractShape = null
 
+  protected _removedLines: number = 0
+  protected _score: number = 0
   protected _gameOver: boolean = false
 
   protected shapeList: ShapeList = new ShapeList()
@@ -146,7 +148,35 @@ export class Field extends Scene implements IHasLifecycle {
           }
         })
       })
+      this.updateScore(fullRows.length)
     }
+  }
+
+  protected updateScore(lineCount: number): void {
+    let points = 0
+    switch (lineCount) {
+      case 1:
+         points = 40
+        break
+      case 2:
+         points = 100
+        break
+      case 3:
+         points = 300
+        break
+      case 4:
+         points = 1200
+        break
+    }
+    points *= this.getScoreMultiplier(lineCount)
+    this._removedLines += lineCount
+    this._score += points
+    document.getElementById('score').innerHTML = this._score.toString()
+  }
+
+  protected getScoreMultiplier(lineCount): number {
+    let multiplier = Math.floor(this._removedLines / 10)
+    return multiplier > 0 ? multiplier : 1
   }
 
   protected gameOver() {
