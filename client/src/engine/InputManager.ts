@@ -12,6 +12,11 @@ export class InputManager {
     this.pressedKeys.splice(this.pressedKeys.indexOf(key), 1)
   }
 
+  public reset(): void {
+    this.pressedKeys = []
+    this.illegalKeys = []
+  }
+
   /** Singleton stuff */
   private static _instance: InputManager
 

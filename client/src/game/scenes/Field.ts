@@ -56,8 +56,7 @@ export class Field extends Scene implements IHasLifecycle {
     if (this._activeShape === null) {
       this.spawnShape()
       if (this._activeShape.collidingWithFixedShape()) {
-        this._gameOver = true
-        alert('Game over!')
+        this.gameOver()
       }
     }
 
@@ -147,6 +146,18 @@ export class Field extends Scene implements IHasLifecycle {
           }
         })
       })
+    }
+  }
+
+  protected gameOver() {
+    this._gameOver = true
+    let startNewGame = confirm('Game Over! Start new game?')
+    if (startNewGame) {
+      const inputManager = InputManager.instance
+      inputManager.reset()
+      this._fixedShapes = []
+      this._activeShape = null
+      this._gameOver = false
     }
   }
 
