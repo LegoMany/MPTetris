@@ -79,6 +79,7 @@ export class Field extends Scene implements IHasLifecycle {
     // HACK: apparently TypeScript doesn't like returning constructors and directly calling them. "as any" fixes it (???)
     const shape = new (this.shapeList.getShape() as any)(new Coordinate(this.width / 2 - Field.CELL_SIZE / 2, 0), this)
     shape.initializeCells()
+    shape.color = '#' + Math.floor(Math.random()*16777215).toString(16)
 
     this._activeShape = shape
   }
@@ -103,9 +104,8 @@ export class Field extends Scene implements IHasLifecycle {
       shapes.push(this._activeShape)
     }
 
-    this.ctx.fillStyle = '#000'
-
     shapes.forEach(shape => {
+      this.ctx.fillStyle = shape.color;
       shape.cells.forEach(cell => {
         this.ctx.fillRect(cell.position.x, cell.position.y, Field.CELL_SIZE, Field.CELL_SIZE)
       })
