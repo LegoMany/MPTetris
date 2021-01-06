@@ -193,7 +193,7 @@ export class Field extends Scene implements IHasLifecycle {
 
   protected handleKeys(): void {
     const inputManager = InputManager.instance
-    if (this._activeShape instanceof AbstractShape) {
+    if (this._activeShape !== null) {
       if (inputManager.keyIsPressed('ArrowLeft')) {
         this._activeShape.moveHorizontally('left')
       }
@@ -207,13 +207,17 @@ export class Field extends Scene implements IHasLifecycle {
       }
 
       if (inputManager.keyIsPressed('a')) {
-        this._activeShape.rotate(AbstractShape.ROTATION_COUNTER_CLOCKWISE)
-        inputManager.dissalowKey('a')
+        if (this._activeShape !== null) {
+          this._activeShape.rotate(AbstractShape.ROTATION_COUNTER_CLOCKWISE)
+          inputManager.dissalowKey('a')
+        }
       }
 
       if (inputManager.keyIsPressed('d')) {
-        this._activeShape.rotate(AbstractShape.ROTATION_CLOCKWISE)
-        inputManager.dissalowKey('d')
+        if (this._activeShape !== null) {
+          this._activeShape.rotate(AbstractShape.ROTATION_CLOCKWISE)
+          inputManager.dissalowKey('d')
+        }
       }
     }
   }
